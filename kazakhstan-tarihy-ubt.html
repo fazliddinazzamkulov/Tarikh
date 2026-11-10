@@ -1,0 +1,548 @@
+<title>Қазақстан тарихы ҰБТ тесті</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one centered column (max 760px); start → test → analysis, each a full view */
+:root{
+  --bg:#F4F6F9; --surface:#FFFFFF; --ink:#0F141A; --muted:#5D6774; --line:#E2E7EE;
+  --lime:#C8F03C; --lime-ink:#141A06;
+  --sky:#E3EEFD; --sky-ink:#1C4F9F;
+  --pink:#E8436F; --pink-soft:#FDE6ED;
+  --ok:#16884A; --ok-soft:#DCF4E6;
+  --warn:#A86400; --warn-soft:#FFF0D4;
+  --font:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1116; --surface:#151B22; --ink:#ECF0F4; --muted:#98A2AF; --line:#262E38;
+  --lime:#C8F03C; --lime-ink:#141A06;
+  --sky:#16243A; --sky-ink:#93B9F4;
+  --pink:#FF6B92; --pink-soft:#3A1622;
+  --ok:#45CF85; --ok-soft:#11301E;
+  --warn:#F0B44A; --warn-soft:#382810;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1116; --surface:#151B22; --ink:#ECF0F4; --muted:#98A2AF; --line:#262E38;
+  --lime:#C8F03C; --lime-ink:#141A06;
+  --sky:#16243A; --sky-ink:#93B9F4;
+  --pink:#FF6B92; --pink-soft:#3A1622;
+  --ok:#45CF85; --ok-soft:#11301E;
+  --warn:#F0B44A; --warn-soft:#382810;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 48px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sky-ink);outline-offset:2px}
+.tnum{font-variant-numeric:tabular-nums}
+.label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ico{width:20px;height:20px;flex:none}
+
+/* Top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.mark{width:32px;height:32px;border-radius:9px;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;font-weight:800;font-size:13px}
+.timer{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px;padding:8px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.timer.low{color:var(--pink);border-color:var(--pink)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:14px 20px;font-weight:700;font-size:16px;min-height:52px}
+.btn-main{background:var(--lime);color:var(--lime-ink)}
+.btn-main:hover{filter:brightness(.96)}
+.btn-ghost{background:var(--surface);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn-ink{background:var(--ink);color:var(--bg)}
+.btn[disabled]{opacity:.4;cursor:default}
+
+/* Start */
+.hero{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+.hero h1{font-size:clamp(34px,7vw,52px);font-weight:800;line-height:1.05}
+.hero p{font-size:18px;color:var(--muted);max-width:52ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 14px;border-radius:999px;background:var(--sky);color:var(--sky-ink);font-weight:600;font-size:14px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field input{font:inherit;font-size:18px;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+.variants{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.vcard{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:6px}
+.vcard b{font-size:22px}
+.vcard span{color:var(--muted);font-size:14px}
+.vcard[aria-pressed="true"]{border-color:var(--ink);background:var(--lime);color:var(--lime-ink)}
+.vcard[aria-pressed="true"] span{color:var(--lime-ink)}
+@media (max-width:520px){.variants{grid-template-columns:1fr}}
+
+/* Test */
+.progress{display:flex;flex-direction:column;gap:8px}
+.progress-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.progress-row strong{font-size:18px}
+.track{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.fill{height:100%;background:var(--lime);border-radius:999px;transition:width .25s}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;gap:20px}
+.qtopic{align-self:flex-start;padding:6px 12px;border-radius:999px;background:var(--sky);color:var(--sky-ink);font-size:13px;font-weight:600}
+.qtext{font-size:clamp(20px,3.6vw,24px);font-weight:600;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;padding:14px 16px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:17px;min-height:58px}
+.opt:hover{border-color:var(--muted)}
+.opt .lt{width:34px;height:34px;flex:none;border-radius:9px;display:grid;place-items:center;font-weight:700;background:var(--bg);border:1px solid var(--line)}
+.opt[aria-checked="true"]{border-color:var(--ink);background:var(--lime);color:var(--lime-ink)}
+.opt[aria-checked="true"] .lt{background:var(--ink);color:var(--lime);border-color:var(--ink)}
+.nav{display:flex;gap:10px}
+.nav .btn{flex:1}
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.gb{aspect-ratio:1;max-width:100%;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px;padding:0}
+.gb.done{background:var(--sky);color:var(--sky-ink);border-color:transparent}
+.gb.cur{outline:2px solid var(--ink);outline-offset:1px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px}
+.confirm{border-color:var(--warn);background:var(--warn-soft)}
+.confirm .row{display:flex;gap:10px;flex-wrap:wrap}
+.confirm .row .btn{flex:1 1 160px}
+
+/* Result */
+.score{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.ring{width:132px;height:132px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.1}
+.ring .num b{font-size:34px;font-weight:800}
+.ring .num small{display:block;color:var(--muted);font-size:13px;font-weight:600}
+.score-info{display:flex;flex-direction:column;gap:10px;min-width:0}
+.score-info h2{font-size:26px}
+.pill{align-self:flex-start;padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--pink-soft);color:var(--pink)}
+.pill.mid{background:var(--warn-soft);color:var(--warn)}
+@media (max-width:520px){.score{grid-template-columns:1fr;justify-items:center;text-align:center}.score-info{align-items:center}.pill{align-self:center}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.stat b{font-size:24px;font-weight:800}
+.stat.c b{color:var(--ok)} .stat.w b{color:var(--pink)}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
+.sec{display:flex;flex-direction:column;gap:14px}
+.sec h3{font-size:20px}
+.trow{display:grid;grid-template-columns:minmax(0,1.3fr) 2fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.trow:last-child{border-bottom:0}
+.trow .nm{font-weight:600;min-width:0}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px}
+.trow .v{font-weight:700;min-width:64px;text-align:right}
+@media (max-width:520px){.trow{grid-template-columns:1fr auto}.trow .bar{grid-column:1/-1;grid-row:2}}
+.tips{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.tips li{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.tips li .dot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:8px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rev{display:flex;flex-direction:column;gap:12px}
+.rcard{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.rcard.right{border-left-color:var(--ok)} .rcard.wrong{border-left-color:var(--pink)} .rcard.empty{border-left-color:var(--warn)}
+.rhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-weight:600}
+.rq{font-weight:600;font-size:17px}
+.ans{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.ans .ico{margin-top:2px}
+.ans.you{color:var(--pink)} .ans.you s{text-decoration-thickness:1px}
+.ans.good{color:var(--ok);font-weight:600}
+.ans.none{color:var(--warn)}
+.expl{font-size:15px;color:var(--muted);background:var(--bg);border-radius:10px;padding:12px 14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions .btn{flex:1 1 180px}
+.toast{font-size:14px;color:var(--ok);font-weight:600;min-height:1.5em}
+.copybox{width:100%;min-height:120px;font:inherit;font-size:14px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="mark">ҰБТ</div><span>Қазақстан тарихы</span></div>
+    <div class="timer tnum" id="timer" hidden>
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>
+      <span id="timeLeft">30:00</span>
+    </div>
+  </header>
+
+  <!-- START -->
+  <section id="vStart" class="wrap" style="gap:24px">
+    <div class="hero">
+      <span class="label">ҰБТ форматындағы сынақ</span>
+      <h1>Қазақстан тарихы</h1>
+      <p>Ежелгі дәуірден тәуелсіз Қазақстанға дейін. Тест соңында тақырыптар бойынша толық талдау шығады.</p>
+      <div class="facts">
+        <span class="chip">20 сұрақ</span>
+        <span class="chip" id="chipTime">30 минут</span>
+        <span class="chip">1 дұрыс жауап — 1 балл</span>
+        <span class="chip">3 нұсқа</span>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="studentName">Аты-жөні</label>
+      <input id="studentName" type="text" placeholder="Мысалы: Айбек Серікұлы" autocomplete="name">
+    </div>
+    <div class="field">
+      <span class="label">Нұсқаны таңдаңыз</span>
+      <div class="variants" id="variants"></div>
+    </div>
+    <button class="btn btn-main" id="startBtn">
+      Тестті бастау
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </section>
+
+  <!-- TEST -->
+  <section id="vTest" class="wrap" hidden>
+    <div class="progress">
+      <div class="progress-row"><strong class="tnum" id="qCounter">1 / 20</strong><span class="label" id="variantLabel">1-нұсқа</span></div>
+      <div class="track"><div class="fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <article class="qcard">
+      <span class="qtopic" id="qTopic"></span>
+      <h2 class="qtext" id="qText"></h2>
+      <div class="opts" id="opts" role="radiogroup" aria-labelledby="qText"></div>
+    </article>
+    <div class="nav">
+      <button class="btn btn-ghost" id="prevBtn">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Алдыңғы
+      </button>
+      <button class="btn btn-ink" id="nextBtn">Келесі
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="panel">
+      <span class="label">Сұрақтар картасы</span>
+      <div class="grid" id="grid"></div>
+      <button class="btn btn-main" id="finishBtn">Тестті аяқтау</button>
+    </div>
+    <div class="panel confirm" id="confirmBox" hidden>
+      <p id="confirmText"></p>
+      <div class="row">
+        <button class="btn btn-ghost" id="contBtn">Жалғастыру</button>
+        <button class="btn btn-ink" id="sureBtn">Аяқтау</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="vResult" class="wrap" hidden>
+    <div class="score">
+      <div class="ring">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="12"/><circle id="ringArc" cx="60" cy="60" r="52" fill="none" stroke="var(--lime)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
+        <div class="num"><div><b class="tnum" id="rScore">0</b><small class="tnum">20 балдан</small></div></div>
+      </div>
+      <div class="score-info">
+        <span class="label" id="rWho"></span>
+        <h2 id="rLevel"></h2>
+        <span class="pill" id="rThreshold"></span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat c"><span class="label">Дұрыс</span><b class="tnum" id="sRight">0</b></div>
+      <div class="stat w"><span class="label">Қате</span><b class="tnum" id="sWrong">0</b></div>
+      <div class="stat"><span class="label">Жауапсыз</span><b class="tnum" id="sEmpty">0</b></div>
+      <div class="stat"><span class="label">Уақыт</span><b class="tnum" id="sTime">00:00</b></div>
+    </div>
+
+    <div class="panel sec">
+      <h3>Тақырыптар бойынша талдау</h3>
+      <div id="topicRows"></div>
+    </div>
+
+    <div class="sec">
+      <h3>Ұсыныстар</h3>
+      <ul class="tips" id="tips"></ul>
+    </div>
+
+    <div class="sec">
+      <h3>Сұрақтарды талдау</h3>
+      <div class="seg" id="filter">
+        <button data-f="all" aria-pressed="false">Барлығы</button>
+        <button data-f="wrong" aria-pressed="true">Қателер</button>
+        <button data-f="empty" aria-pressed="false">Жауапсыз</button>
+        <button data-f="right" aria-pressed="false">Дұрыс</button>
+      </div>
+      <div class="rev" id="review"></div>
+    </div>
+
+    <div class="panel sec">
+      <h3>Нәтижені мұғалімге жіберу</h3>
+      <textarea class="copybox" id="copyText" readonly aria-label="Нәтиже мәтіні"></textarea>
+      <div class="actions">
+        <button class="btn btn-main" id="copyBtn">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Көшіріп алу
+        </button>
+      </div>
+      <span class="toast" id="toast" aria-live="polite"></span>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-ghost" id="retryBtn">Осы нұсқаны қайта тапсыру</button>
+      <button class="btn btn-ink" id="otherBtn">Басқа нұсқаны таңдау</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===== Баптаулар ===== */
+const TIME_MIN = 30;          // тест уақыты (минут)
+const THRESHOLD = 5;          // ҰБТ-дегі шекті балл (20 балдан)
+const LETTERS = ['A','B','C','D'];
+
+const TOPICS = {
+  ancient:  'Ежелгі дәуір',
+  iron:     'Ерте темір дәуірі',
+  medieval: 'Ортағасырлық мемлекеттер',
+  khanate:  'Қазақ хандығы',
+  colonial: 'Ресей империясы құрамында',
+  soviet:   'XX ғасыр және Кеңес дәуірі',
+  indep:    'Тәуелсіз Қазақстан'
+};
+
+/* Әр сұрақта бірінші нұсқа — дұрыс жауап. Жауаптар экранда араласып шығады. */
+const VARIANTS = [
+[
+ {t:'ancient', q:'Қазақстан аумағындағы ең көне палеолит тұрақтары (Арыстанды, Бөріқазған, Таңірқазған) қай жерден табылған?', o:['Қаратау жотасы','Маңғыстау түбегі','Алтай таулары','Ұлытау'], e:'Ежелгі палеолит ескерткіштері Оңтүстік Қазақстандағы Қаратау жотасында шоғырланған. Оларды археолог Х. Алпысбаев ашқан.'},
+ {t:'ancient', q:'Жылқыны алғаш қолға үйреткенін дәлелдейтін энеолит дәуірінің мәдениеті:', o:['Ботай','Андронов','Беғазы-Дәндібай','Тасмола'], e:'Солтүстік Қазақстандағы Ботай қонысынан (б.з.б. IV мыңжылдық) жылқы сүйектері мен бие сүтінің іздері табылған.'},
+ {t:'ancient', q:'Андронов мәдениеті қай дәуірге жатады?', o:['Қола дәуірі','Палеолит','Неолит','Ерте темір дәуірі'], e:'Андронов мәдениеті — б.з.б. II мыңжылдықтағы қола дәуірінің мәдениеті. Тұрғындары мал шаруашылығы мен егіншілікпен айналысып, мыс пен қалайы өндірген.'},
+ {t:'iron', q:'«Алтын адам» 1969 жылы қай қорғаннан табылды?', o:['Есік','Берел','Шілікті','Бесшатыр'], e:'Алтын әшекейлі киім киген сақ жауынгері Алматы облысындағы Есік қорғанынан табылды. Қазба жұмысын К. Ақышев басқарды.'},
+ {t:'iron', q:'Б.з.б. 530 жылы парсы патшасы Кир II-ні жеңген массагеттердің патшайымы:', o:['Томирис','Зарина','Спаретра','Ұмай'], e:'Геродоттың жазуынша, массагеттер патшайымы Томирис (Тұмар) Кир II әскерін талқандаған.'},
+ {t:'iron', q:'Үйсін мемлекетінің астанасы:', o:['Чигучэн','Битянь','Суяб','Баласағұн'], e:'Үйсіндердің астанасы Чигучэн («Қызыл аңғар қаласы») Ыстықкөл маңында орналасқан. Битянь — қаңлылардың астанасы.'},
+ {t:'medieval', q:'552 жылы Түрік қағанатының негізін қалаған:', o:['Бумын','Истеми','Мұқан','Күлтегін'], e:'Бумын 552 жылы жужандарды жеңіп, «Ел қаған» атағын алды. Қағанаттың батыс бөлігін інісі Истеми басқарды.'},
+ {t:'medieval', q:'751 жылғы Атлах шайқасы кімдердің арасында болды?', o:['Арабтар мен Таң империясы','Түргештер мен арабтар','Қарлұқтар мен оғыздар','Моңғолдар мен Хорезмшахтар'], e:'Тараз маңындағы Атлах шайқасында арабтар қарлұқтардың көмегімен Таң (Қытай) әскерін жеңді. Осыдан кейін Жетісуда Қытайдың ықпалы тоқтады.'},
+ {t:'medieval', q:'Қарахан мемлекетінде ислам мемлекеттік дін болып жарияланған жыл:', o:['960','751','840','1219'], e:'Исламды алғаш Сатұқ Боғра хан қабылдады. Оның ұлы Мұса тұсында, 960 жылы ислам мемлекеттік дін болып жарияланды.'},
+ {t:'medieval', q:'«Диуани лұғат-ит түрік» (Түрік сөздерінің жинағы) еңбегінің авторы:', o:['Махмұд Қашқари','Жүсіп Баласағұн','Қожа Ахмет Ясауи','Әбу Насыр әл-Фараби'], e:'Махмұд Қашқари XI ғасырда түркі тілдерінің сөздігін жазып, түркі тайпалары туралы құнды дерек қалдырды.'},
+ {t:'medieval', q:'1219–1220 жылдары моңғолдарға қарсы Отырар қорғанысын басқарған:', o:['Қайыр хан','Темір Мәлік','Мұхаммед Хорезмшах','Күшлік'], e:'Отырар әміршісі Қайыр хан қаланы алты ай қорғады. Темір Мәлік Ходжент қорғанысын басқарған.'},
+ {t:'khanate', q:'Қазақ хандығының негізін қалағандар:', o:['Керей мен Жәнібек','Қасым мен Есім','Хақназар мен Тәуекел','Тәуке мен Абылай'], e:'1465 жылы Керей мен Жәнібек Батыс Жетісуда, Шу мен Талас өңірінде Қазақ хандығын құрды.'},
+ {t:'khanate', q:'«Қасым ханның қасқа жолы» заңдары кімнің тұсында қабылданды?', o:['Қасым хан','Есім хан','Тәуке хан','Хақназар хан'], e:'Қасым хан тұсында (XVI ғ. басы) хандық күшейіп, халық саны 1 миллионға жетті. Есім хан «Ескі жолды», Тәуке хан «Жеті жарғыны» енгізді.'},
+ {t:'khanate', q:'1728 жылы жоңғарларды жеңген, «Қалмақ қырылған» деп аталған шайқас:', o:['Бұланты','Аңырақай','Орбұлақ','Атлах'], e:'Бұланты өзені бойындағы шайқаста үш жүздің біріккен жасағы жоңғарларды жеңді. 1729 жылы Аңырақай шайқасында тағы бір ірі жеңіске жетті.'},
+ {t:'colonial', q:'1731 жылы Ресей бодандығын қабылдаған Кіші жүз ханы:', o:['Әбілқайыр','Абылай','Сәмеке','Әбілмәмбет'], e:'Әбілқайыр хан 1731 жылы 10 қазанда Ресейге адал болуға ант берді. Бұл Қазақстанның Ресейге қосылу үдерісінің бастауы болды.'},
+ {t:'colonial', q:'Кіші жүздегі 1783–1797 жылдардағы ұлт-азаттық көтерілістің жетекшісі:', o:['Сырым Датұлы','Исатай Тайманұлы','Кенесары Қасымұлы','Жанқожа Нұрмұхамедұлы'], e:'Сырым Датұлы көтерілісі патша үкіметінің отаршылдық саясатына және хан билігінің озбырлығына қарсы бағытталды.'},
+ {t:'colonial', q:'1837–1847 жылдардағы ұлт-азаттық көтерілісті басқарған соңғы қазақ ханы:', o:['Кенесары Қасымұлы','Сырым Датұлы','Махамбет Өтемісұлы','Есет Көтібарұлы'], e:'Абылай ханның немересі Кенесары 1841 жылы үш жүздің өкілдері тарапынан хан сайланды.'},
+ {t:'soviet', q:'1917 жылы құрылған Алашорда үкіметінің төрағасы:', o:['Әлихан Бөкейхан','Ахмет Байтұрсынұлы','Міржақып Дулатұлы','Мұстафа Шоқай'], e:'1917 жылы желтоқсанда II жалпықазақ съезінде Алаш автономиясы жарияланып, Алашорда төрағасы болып Әлихан Бөкейхан сайланды. Мұстафа Шоқай Түркістан (Қоқан) автономиясын басқарды.'},
+ {t:'soviet', q:'1986 жылғы Желтоқсан оқиғасының басты себебі:', o:['Д. Қонаевтың орнына Г. Колбиннің тағайындалуы','Тың игерудің басталуы','Семей полигонының ашылуы','КСРО-ның ыдырауы'], e:'1986 жылы 16 желтоқсанда Қазақстан Компартиясының бірінші хатшысы болып республикамен байланысы жоқ Г. Колбин тағайындалды. 17–18 желтоқсанда Алматыда жастар наразылыққа шықты.'},
+ {t:'indep', q:'«Қазақстан Республикасының мемлекеттік тәуелсіздігі туралы» Конституциялық заң қабылданған күн:', o:['1991 жылғы 16 желтоқсан','1990 жылғы 25 қазан','1995 жылғы 30 тамыз','1992 жылғы 2 наурыз'], e:'1991 жылы 16 желтоқсанда Қазақстан тәуелсіздігін жариялады. 1990 жылы 25 қазанда Мемлекеттік егемендік туралы декларация қабылданған.'}
+],
+[
+ {t:'ancient', q:'Садақ пен жебе ойлап табылған дәуір:', o:['Мезолит','Палеолит','Неолит','Энеолит'], e:'Мезолит (орта тас) дәуірінде садақ пен жебенің пайда болуы аңшылықты жеңілдетті, адамдар ұсақ аңдарды да аулай бастады.'},
+ {t:'ancient', q:'Беғазы-Дәндібай мәдениеті тараған өңір:', o:['Орталық Қазақстан','Батыс Қазақстан','Жетісу','Маңғыстау'], e:'Беғазы-Дәндібай — соңғы қола дәуірінің (б.з.б. XII–VIII ғғ.) мәдениеті. Оның ескерткіштері Орталық Қазақстаннан табылған.'},
+ {t:'iron', q:'«Мұртты» обаларымен ерекшеленетін ерте темір дәуірінің мәдениеті:', o:['Тасмола','Ботай','Андронов','Атасу'], e:'Тасмола мәдениеті (б.з.б. VII–III ғғ.) Орталық Қазақстанда таралған. Тастан қаланған екі «мұрты» бар обалар осы мәдениетке тән.'},
+ {t:'iron', q:'Ғұндардың Еуропадағы мемлекетінің ең атақты билеушісі:', o:['Аттила','Мөде','Истеми','Бумын'], e:'V ғасырда Аттила бастаған ғұндар Еуропаның көп бөлігін бағындырды. Мөде — б.з.б. III ғасырда Азиядағы Ғұн мемлекетін күшейткен шаньюй.'},
+ {t:'iron', q:'Қаңлы мемлекетінің астанасы:', o:['Битянь','Чигучэн','Баласағұн','Сығанақ'], e:'Қаңлылардың астанасы — Битянь. Чигучэн — үйсіндердің, Баласағұн — Қарахандардың астанасы.'},
+ {t:'medieval', q:'Түрік қағанаты Шығыс және Батыс болып екіге бөлінген жыл:', o:['603','552','704','756'], e:'Ішкі тартыс пен Қытайдың араласуы салдарынан қағанат 603 жылы екіге бөлінді. Қазақстан аумағы Батыс Түрік қағанатының құрамына енді.'},
+ {t:'medieval', q:'704 жылы Түргеш қағанатының негізін қалаған:', o:['Үшелік','Сұлу','Бумын','Тон Ябғу'], e:'Үшелік Жетісуда Түргеш қағанатын құрды, ордасы Суяб қаласында болды. Сұлу қаған кейін арабтарға қарсы күресімен танылды.'},
+ {t:'medieval', q:'Оғыз мемлекетінің астанасы:', o:['Янгикент','Сығанақ','Тараз','Сарайшық'], e:'Оғыздардың астанасы Янгикент (Жаңакент) Сырдарияның төменгі ағысында орналасқан.'},
+ {t:'medieval', q:'XI ғасырдан бастап Ертістен Дунайға дейінгі дала парсы деректерінде қалай аталды?', o:['Дешті Қыпшақ','Мауараннахр','Моғолстан','Жетісу'], e:'Қыпшақтардың ықпалы күшейген соң ұлан-байтақ Еуразия даласы «Дешті Қыпшақ» (Қыпшақ даласы) деп атала бастады.'},
+ {t:'medieval', q:'«Екінші ұстаз» атанған, Отырардан шыққан ғұлама:', o:['Әбу Насыр әл-Фараби','Махмұд Қашқари','Жүсіп Баласағұн','Мұхаммед Хайдар Дулати'], e:'Әл-Фараби Аристотельден кейінгі «Екінші ұстаз» атанды. Ол философия, математика, музыка салаларында еңбек жазды.'},
+ {t:'medieval', q:'Түркістандағы Қожа Ахмет Ясауи кесенесін салдырған билеуші:', o:['Әмір Темір','Шыңғыс хан','Әбілқайыр хан','Тәуке хан'], e:'Кесене XIV ғасырдың соңында Әмір Темірдің бұйрығымен салына бастады. Қазір ол ЮНЕСКО-ның Бүкіләлемдік мұра тізімінде.'},
+ {t:'medieval', q:'1243 жылы Алтын Орданың негізін қалаған:', o:['Батый','Жошы','Шағатай','Берке'], e:'Жошының ұлы Батый Еуропаға жорықтан кейін Төменгі Еділ бойында Алтын Орданы құрды. Астанасы — Сарай-Бату.'},
+ {t:'medieval', q:'Ақ Орданың астанасы:', o:['Сығанақ','Сарай-Бату','Сарайшық','Суяб'], e:'Ақ Орда (XIII–XV ғғ.) Сырдария бойындағы Сығанақ қаласын астана етті. Оның белгілі ханы — Орыс хан.'},
+ {t:'khanate', q:'XVI ғасырдың екінші жартысында Қазақ хандығын қайта күшейтіп, ноғайларға қарсы табысты соғысқан хан:', o:['Хақназар','Тәуекел','Жәңгір','Абылай'], e:'Хақназар хан (1538–1580) ішкі дағдарыстан кейін хандықты қайта біріктіріп, «қазақтар мен ноғайлардың ханы» атанды.'},
+ {t:'khanate', q:'«Жеті жарғы» заңдар жинағын қабылдаған хан:', o:['Тәуке','Қасым','Есім','Абылай'], e:'Тәуке хан тұсында «Жеті жарғы» қабылданды. Оны әзірлеуге Төле би, Қазыбек би, Әйтеке би қатысты.'},
+ {t:'khanate', q:'1643 жылғы Орбұлақ шайқасында қазақ жасағын басқарған хан:', o:['Жәңгір','Тәуке','Есім','Абылай'], e:'Жәңгір хан 600 сарбазбен жоңғарлардың 50 мыңдық әскерін тоқтатты. Көмекке Самарқан әміршісі Жалаңтөс батыр келді.'},
+ {t:'colonial', q:'1836–1838 жылдары Исатай мен Махамбет бастаған көтеріліс болған өңір:', o:['Бөкей ордасы','Ұлы жүз','Жетісу','Сырдария бойы'], e:'Көтеріліс Бөкей (Ішкі) ордасында Жәңгір ханның және патша әкімшілігінің озбырлығына қарсы шықты. 1838 жылы Исатай Ақбұлақ шайқасында қаза тапты.'},
+ {t:'colonial', q:'Орта жүзде хандық билікті жойған құжат:', o:['1822 жылғы «Сібір қырғыздары туралы жарғы»','1824 жылғы «Орынбор қырғыздары туралы жарғы»','1867–1868 жылдардағы «Уақытша ереже»','1886 жылғы «Түркістан өлкесін басқару туралы ереже»'], e:'М. Сперанский әзірлеген 1822 жылғы жарғы Орта жүзде хандықты жойды. 1824 жылы Кіші жүзде де хан билігі жойылды.'},
+ {t:'soviet', q:'1916 жылғы ұлт-азаттық көтерілістің басталуына себеп болған құжат:', o:['Бұратаналарды майдандағы қара жұмысқа алу туралы 25 маусымдағы патша жарлығы','Столыпиннің аграрлық реформасы','Алаш партиясының бағдарламасы','Ақпан революциясы туралы манифест'], e:'Жарлық бойынша 19–43 жас аралығындағы ер адамдар тыл жұмыстарына алынуға тиіс болды. Торғайда көтерілісті Амангелді Иманов пен Әбдіғапар Жанбосынов басқарды.'},
+ {t:'indep', q:'Елорда Алматыдан Ақмолаға көшірілген жыл:', o:['1997','1991','1994','1998'], e:'Астананы көшіру туралы шешім 1994 жылы қабылданып, 1997 жылы 10 желтоқсанда елорда ресми түрде Ақмолаға көшті. 1998 жылы қала Астана деп аталды.'}
+],
+[
+ {t:'ancient', q:'«Неолит төңкерісі» ұғымы нені білдіреді?', o:['Иемденуші шаруашылықтан өндіруші шаруашылыққа көшуді','Темірді өңдеудің басталуын','Жазудың пайда болуын','Алғашқы мемлекеттердің құрылуын'], e:'Неолит дәуірінде адамдар дайын өнімді жинаудан егіншілік пен мал өсіруге, яғни өндіруші шаруашылыққа көшті.'},
+ {t:'ancient', q:'Қола — қандай металдардың қорытпасы?', o:['Мыс пен қалайы','Темір мен көміртек','Мыс пен мырыш','Алтын мен күміс'], e:'Қола мыс пен қалайыны қорыту арқылы алынады. Қазақстан аумағы мыс пен қалайы кендеріне бай болғандықтан, металлургия мұнда ерте дамыды.'},
+ {t:'iron', q:'Пазырық мәдениетіне жататын Берел қорымы орналасқан өңір:', o:['Шығыс Қазақстан, Алтай','Оңтүстік Қазақстан, Қаратау','Батыс Қазақстан, Жайық бойы','Орталық Қазақстан, Ұлытау'], e:'Берел қорымы Шығыс Қазақстандағы Бұқтырма өзенінің аңғарында орналасқан. Мұз басқан қорғандарда ағаш, киіз бұйымдар мен ер-тұрманды жылқылар сақталған.'},
+ {t:'iron', q:'Сақтар мен массагеттер туралы мәлімет қалдырған «тарихтың атасы»:', o:['Геродот','Страбон','Сыма Цянь','Птолемей'], e:'Ежелгі грек тарихшысы Геродот (б.з.б. V ғ.) «Тарих» еңбегінде сақтар мен массагеттердің тұрмысын сипаттаған.'},
+ {t:'iron', q:'Б.з.б. II ғасырда үйсіндерге елші болып келген Хань империясының дипломаты:', o:['Чжан Цянь','Сыма Цянь','Сюань Цзан','Бань Гу'], e:'Чжан Цянь үйсіндермен одақ құру үшін келді. Оның сапарлары Қытай мен Орта Азия арасындағы тұрақты байланысқа негіз болды.'},
+ {t:'iron', q:'Ұлы Жібек жолы қай уақытта қалыптаса бастады?', o:['Б.з.б. II ғасырда','Б.з. V ғасырда','Б.з. X ғасырда','Б.з.б. VII ғасырда'], e:'Жібек жолы б.з.б. II ғасырда Қытай мен Батысты байланыстырды. VI–XII ғасырларда оның басты тармақтары Қазақстан аумағы арқылы өтті.'},
+ {t:'medieval', q:'Қарлұқ мемлекеті құрылған жыл:', o:['756','552','704','940'], e:'Қарлұқтар 756 жылы Жетісуда мемлекет құрды. 940 жылы билік Қарахандарға өтті.'},
+ {t:'medieval', q:'Қимақ қағанатының негізгі аумағы орналасқан өзен бойы:', o:['Ертіс','Сырдария','Іле','Жайық'], e:'Қимақтар IX–XI ғасырларда Ертіс өзенінің орта ағысында мемлекет құрды. Астанасы — Имакия.'},
+ {t:'medieval', q:'«Құтадғу біліг» (Құт әкелетін білім) дастанының авторы:', o:['Жүсіп Баласағұн','Махмұд Қашқари','Қожа Ахмет Ясауи','Ахмет Йүгінеки'], e:'Жүсіп Баласағұн бұл еңбекті 1069–1070 жылдары жазып, Қарахан билеушісіне тарту етті.'},
+ {t:'medieval', q:'Тараз маңындағы, ою-өрнекті күйдірілген кірпішпен қапталған XI–XII ғасырлардағы кесене:', o:['Айша бибі','Қожа Ахмет Ясауи','Арыстан баб','Алаша хан'], e:'Айша бибі кесенесі — Қарахан дәуірі сәулет өнерінің үздік үлгісі. Оның жанында Бабаджа хатун кесенесі тұр.'},
+ {t:'medieval', q:'Моңғол жаулап алуынан кейін Қазақстан аумағының басым бөлігі енген ұлыс:', o:['Жошы ұлысы','Шағатай ұлысы','Үгедей ұлысы','Төле ұлысы'], e:'Шыңғыс хан жерін ұлдарына бөлгенде Қазақстанның көп бөлігі үлкен ұлы Жошыға тиді. Оңтүстік-шығыс өңірлер Шағатай ұлысына енді.'},
+ {t:'medieval', q:'Моғолстан мемлекеті құрылған жыл:', o:['1348','1361','1428','1465'], e:'1348 жылы дулат әмірлері Тоғылық Темірді хан етіп көтеріп, Моғолстан құрылды. Негізгі аумағы — Жетісу.'},
+ {t:'khanate', q:'Керей мен Жәнібек кімнің билігінен бөлініп, Моғолстанға көшті?', o:['Әбілқайыр ханның','Есенбұға ханның','Орыс ханның','Абылай ханның'], e:'Көшпелі өзбектер мемлекетінің ханы Әбілқайырдың (1428–1468) саясатына наразы рулар Керей мен Жәнібекке еріп, Батыс Жетісуға көшті. Оларды Моғолстан ханы Есенбұға қабылдады.'},
+ {t:'khanate', q:'1723 жылғы жоңғар шапқыншылығынан басталған халық қасіреті қалай аталады?', o:['«Ақтабан шұбырынды, Алқакөл сұлама»','«Қалмақ қырылған»','«Ұлы көш»','«Зұлмат»'], e:'1723 жылы жоңғарлардың жаппай шабуылынан халық ата қонысынан босып, көп адам қырылды. Бұл кезең «Ақтабан шұбырынды, Алқакөл сұлама» деп аталды.'},
+ {t:'khanate', q:'1771 жылы Түркістанда үш жүздің ханы болып сайланған:', o:['Абылай','Әбілқайыр','Тәуке','Кенесары'], e:'Абылай 1771 жылы Әбілмәмбет хан қайтыс болғаннан кейін хан сайланды. Ол Ресей мен Цин империясының арасында теңгерімді саясат жүргізді.'},
+ {t:'colonial', q:'Алматы қаласының негізін қалаған бекініс:', o:['Верный','Ақмола','Перовск','Әулиеата'], e:'1854 жылы Кіші Алматы өзенінің бойында бекініс салынып, 1855 жылдан Верный деп аталды. Қала 1921 жылы Алматы атауын алды.'},
+ {t:'colonial', q:'1864 жылы Торғайда қазақ балаларына арналған мектеп ашқан ағартушы:', o:['Ыбырай Алтынсарин','Шоқан Уәлиханов','Абай Құнанбайұлы','Ахмет Байтұрсынұлы'], e:'Ыбырай Алтынсарин 1864 жылы 8 қаңтарда Торғайда мектеп ашты. Ол «Қазақ хрестоматиясын» жазып, жаңа әдісті мектептердің негізін қалады.'},
+ {t:'soviet', q:'1931–1933 жылдардағы ашаршылыққа әкелген негізгі себеп:', o:['Күштеп ұжымдастыру және малды тәркілеу','Ұлы Отан соғысы','Тың игеру саясаты','1916 жылғы көтеріліс'], e:'Көшпелілерді күштеп отырықшыландыру, ұжымдастыру, мал мен астықты тартып алу 1,5 миллионнан астам адамның өліміне әкелді.'},
+ {t:'soviet', q:'Қазақстанда тың және тыңайған жерлерді игеру басталған жыл:', o:['1954','1941','1961','1986'], e:'1954 жылы басталған тың игеру республиканы ірі астық өндірушіге айналдырды, бірақ жайылымдар тарылып, жер эрозиясы күшейді.'},
+ {t:'soviet', q:'Семей ядролық сынақ полигоны жабылған күн:', o:['1991 жылғы 29 тамыз','1989 жылғы 28 ақпан','1986 жылғы 17 желтоқсан','1991 жылғы 16 желтоқсан'], e:'1949–1989 жылдары полигонда 450-ден астам ядролық сынақ жасалды. 1991 жылы 29 тамызда жарлықпен полигон жабылды. 1989 жылы 28 ақпанда «Невада–Семей» қозғалысы құрылған.'}
+]
+];
+
+/* ===== Көмекші ===== */
+const $ = id => document.getElementById(id);
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr, seed){const r=rng(seed);const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fmt(sec){sec=Math.max(0,Math.round(sec));const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const ICON_X='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const ICON_OK='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ICON_DASH='<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 12h12"/></svg>';
+
+/* ===== Күй ===== */
+let S = {v:0, name:'', qs:[], ans:[], cur:0, t0:0, t1:0, timer:null, filter:'wrong'};
+
+/* ===== Бастапқы бет ===== */
+$('chipTime').textContent = TIME_MIN + ' минут';
+function renderVariants(){
+  $('variants').innerHTML = VARIANTS.map((v,i)=>{
+    const n = new Set(v.map(q=>q.t)).size;
+    return `<button class="vcard" data-v="${i}" aria-pressed="${i===S.v}"><b>${i+1}-нұсқа</b><span>${v.length} сұрақ · ${n} тақырып</span></button>`;
+  }).join('');
+}
+$('variants').addEventListener('click',e=>{const b=e.target.closest('.vcard');if(!b)return;S.v=+b.dataset.v;renderVariants()});
+renderVariants();
+
+function show(view){['vStart','vTest','vResult'].forEach(id=>$(id).hidden = id!==view);$('timer').hidden = view!=='vTest';window.scrollTo(0,0)}
+
+function start(){
+  S.name = $('studentName').value.trim();
+  S.qs = VARIANTS[S.v].map((q,i)=>{
+    const opts = shuffle(q.o.map((text,k)=>({text, correct:k===0})), (S.v+1)*1000+i+7);
+    return {...q, opts};
+  });
+  S.ans = new Array(S.qs.length).fill(null);
+  S.cur = 0; S.t0 = Date.now(); S.t1 = 0;
+  $('variantLabel').textContent = (S.v+1)+'-нұсқа';
+  $('confirmBox').hidden = true;
+  clearInterval(S.timer);
+  tick(); S.timer = setInterval(tick, 1000);
+  renderQ(); show('vTest');
+}
+$('startBtn').addEventListener('click', start);
+
+/* ===== Тест ===== */
+function tick(){
+  const left = TIME_MIN*60 - (Date.now()-S.t0)/1000;
+  $('timeLeft').textContent = fmt(left);
+  $('timer').classList.toggle('low', left < 300);
+  if(left <= 0) finish();
+}
+function renderQ(){
+  const q = S.qs[S.cur], n = S.qs.length;
+  $('qCounter').textContent = (S.cur+1)+' / '+n;
+  const answered = S.ans.filter(a=>a!==null).length;
+  $('progFill').style.width = (answered/n*100)+'%';
+  $('qTopic').textContent = TOPICS[q.t];
+  $('qText').textContent = (S.cur+1)+'. '+q.q;
+  $('opts').innerHTML = q.opts.map((o,k)=>`<button class="opt" role="radio" data-k="${k}" aria-checked="${S.ans[S.cur]===k}"><span class="lt">${LETTERS[k]}</span><span>${esc(o.text)}</span></button>`).join('');
+  $('prevBtn').disabled = S.cur===0;
+  $('nextBtn').disabled = S.cur===n-1;
+  $('grid').innerHTML = S.qs.map((_,i)=>`<button class="gb tnum${S.ans[i]!==null?' done':''}${i===S.cur?' cur':''}" data-i="${i}" aria-label="${i+1}-сұрақ">${i+1}</button>`).join('');
+}
+$('opts').addEventListener('click',e=>{
+  const b=e.target.closest('.opt'); if(!b) return;
+  S.ans[S.cur] = +b.dataset.k; renderQ();
+  if(S.cur < S.qs.length-1) setTimeout(()=>{S.cur++;renderQ()}, 260);
+});
+$('prevBtn').addEventListener('click',()=>{if(S.cur>0){S.cur--;renderQ()}});
+$('nextBtn').addEventListener('click',()=>{if(S.cur<S.qs.length-1){S.cur++;renderQ()}});
+$('grid').addEventListener('click',e=>{const b=e.target.closest('.gb');if(!b)return;S.cur=+b.dataset.i;renderQ()});
+document.addEventListener('keydown',e=>{
+  if($('vTest').hidden || e.target.tagName==='INPUT') return;
+  const map={'1':0,'2':1,'3':2,'4':3,'a':0,'b':1,'c':2,'d':3};
+  const k=map[e.key.toLowerCase()];
+  if(k!==undefined){S.ans[S.cur]=k;renderQ()}
+  if(e.key==='ArrowRight'&&S.cur<S.qs.length-1){S.cur++;renderQ()}
+  if(e.key==='ArrowLeft'&&S.cur>0){S.cur--;renderQ()}
+});
+$('finishBtn').addEventListener('click',()=>{
+  const empty = S.ans.filter(a=>a===null).length;
+  if(empty===0){finish();return}
+  $('confirmText').textContent = `Жауап берілмеген сұрақтар саны: ${empty}. Тестті аяқтасаңыз, олар қате болып есептеледі.`;
+  $('confirmBox').hidden = false;
+  $('confirmBox').scrollIntoView({behavior:'smooth',block:'center'});
+});
+$('contBtn').addEventListener('click',()=>{$('confirmBox').hidden=true;const i=S.ans.indexOf(null);if(i>=0){S.cur=i;renderQ();window.scrollTo(0,0)}});
+$('sureBtn').addEventListener('click', finish);
+
+/* ===== Талдау ===== */
+function finish(){
+  if(!$('vTest').hidden || S.t1===0){ clearInterval(S.timer); S.t1 = Date.now(); }
+  const res = S.qs.map((q,i)=>{
+    const a=S.ans[i]; const ci=q.opts.findIndex(o=>o.correct);
+    return {i, q, a, ci, st: a===null?'empty':(a===ci?'right':'wrong')};
+  });
+  S.res = res;
+  const right=res.filter(r=>r.st==='right').length, wrong=res.filter(r=>r.st==='wrong').length, empty=res.filter(r=>r.st==='empty').length;
+  const n=res.length, pct=Math.round(right/n*100), spent=Math.min((S.t1-S.t0)/1000, TIME_MIN*60);
+
+  $('rScore').textContent = right;
+  const C=326.7; $('ringArc').style.strokeDashoffset = C - C*right/n;
+  $('ringArc').setAttribute('stroke', pct>=65?'var(--lime)':pct>=40?'var(--warn)':'var(--pink)');
+  $('rWho').textContent = (S.name ? S.name+' · ' : '') + (S.v+1)+'-нұсқа · '+pct+'%';
+  $('rLevel').textContent = pct>=85?'Өте жақсы нәтиже':pct>=65?'Жақсы нәтиже':pct>=40?'Орташа нәтиже':'Төмен нәтиже';
+  const th=$('rThreshold');
+  if(right>=THRESHOLD){th.className='pill ok';th.textContent=`Шекті балдан (${THRESHOLD}) өттіңіз`}
+  else{th.className='pill bad';th.textContent=`Шекті балға (${THRESHOLD}) жеткен жоқсыз`}
+  $('sRight').textContent=right; $('sWrong').textContent=wrong; $('sEmpty').textContent=empty; $('sTime').textContent=fmt(spent);
+
+  // тақырыптар
+  const byT={};
+  res.forEach(r=>{(byT[r.q.t]??={tot:0,ok:0,nums:[]});byT[r.q.t].tot++;if(r.st==='right')byT[r.q.t].ok++;else byT[r.q.t].nums.push(r.i+1)});
+  const order=Object.keys(TOPICS).filter(k=>byT[k]);
+  $('topicRows').innerHTML = order.map(k=>{
+    const d=byT[k], p=Math.round(d.ok/d.tot*100);
+    const col=p>=80?'var(--ok)':p>=50?'var(--warn)':'var(--pink)';
+    return `<div class="trow"><span class="nm">${TOPICS[k]}</span><div class="bar"><i style="width:${Math.max(p,3)}%;background:${col}"></i></div><span class="v tnum">${d.ok} / ${d.tot}</span></div>`;
+  }).join('');
+
+  // ұсыныстар
+  const weak=order.filter(k=>byT[k].ok/byT[k].tot<0.6).sort((a,b)=>byT[a].ok/byT[a].tot-byT[b].ok/byT[b].tot);
+  const mid=order.filter(k=>{const p=byT[k].ok/byT[k].tot;return p>=0.6&&p<1});
+  let tips=[];
+  weak.forEach(k=>tips.push({c:'var(--pink)',h:`<b>${TOPICS[k]}</b> — ${byT[k].ok} / ${byT[k].tot} дұрыс. Бұл тақырыпты басынан қайталаңыз. Қате сұрақтар: ${byT[k].nums.join(', ')}.`}));
+  mid.forEach(k=>tips.push({c:'var(--warn)',h:`<b>${TOPICS[k]}</b> — жақсы, бірақ ${byT[k].nums.join(', ')}-сұрақтың түсіндірмесін оқып шығыңыз.`}));
+  if(empty>0) tips.push({c:'var(--warn)',h:`<b>${empty}</b> сұраққа жауап берілмеді. ҰБТ-да айып балл жоқ, сондықтан әр сұраққа жауап белгілеген тиімді.`});
+  const perQ=spent/n;
+  if(perQ<25 && wrong>4) tips.push({c:'var(--sky-ink)',h:`Бір сұраққа орта есеппен ${Math.round(perQ)} секунд жұмсалды. Асықпай, сұрақты соңына дейін оқыңыз.`});
+  if(!weak.length && !mid.length && !empty) tips.push({c:'var(--ok)',h:'Барлық тақырып бойынша қатесіз. Келесі нұсқаны орындап, нәтижені бекітіңіз.'});
+  else if(!weak.length) tips.push({c:'var(--ok)',h:'Әлсіз тақырып жоқ. Қателермен жұмыс жасап, келесі нұсқаға өтіңіз.'});
+  $('tips').innerHTML = tips.map(t=>`<li><span class="dot" style="background:${t.c}"></span><span>${t.h}</span></li>`).join('');
+
+  // көшіру мәтіні
+  const wrongNums=res.filter(r=>r.st!=='right').map(r=>r.i+1);
+  $('copyText').value = [
+    'Қазақстан тарихы · ҰБТ сынақ тесті · '+(S.v+1)+'-нұсқа',
+    'Оқушы: '+(S.name||'көрсетілмеген'),
+    'Нәтиже: '+right+' / '+n+' ('+pct+'%)',
+    'Дұрыс: '+right+' · Қате: '+wrong+' · Жауапсыз: '+empty,
+    'Уақыт: '+fmt(spent),
+    'Әлсіз тақырыптар: '+(weak.length?weak.map(k=>TOPICS[k]).join(', '):'жоқ'),
+    'Қате және жауапсыз сұрақтар: '+(wrongNums.length?wrongNums.join(', '):'жоқ')
+  ].join('\n');
+  $('toast').textContent='';
+
+  S.filter = (wrong+empty)>0 ? 'wrong' : 'all';
+  if(S.filter==='wrong' && wrong===0) S.filter='empty';
+  renderReview();
+  show('vResult');
+}
+function renderReview(){
+  document.querySelectorAll('#filter button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.f===S.filter));
+  const list=S.res.filter(r=>S.filter==='all'||r.st===S.filter);
+  if(!list.length){$('review').innerHTML='<p style="color:var(--muted)">Бұл бөлімде сұрақ жоқ.</p>';return}
+  $('review').innerHTML = list.map(r=>{
+    const corr=r.q.opts[r.ci];
+    let you='';
+    if(r.st==='wrong') you=`<div class="ans you">${ICON_X}<span>Сіздің жауабыңыз: <s>${LETTERS[r.a]}) ${esc(r.q.opts[r.a].text)}</s></span></div>`;
+    if(r.st==='empty') you=`<div class="ans none">${ICON_DASH}<span>Жауап берілмеген</span></div>`;
+    const tag=r.st==='right'?'Дұрыс':r.st==='wrong'?'Қате':'Жауапсыз';
+    return `<article class="rcard ${r.st}">
+      <div class="rhead"><span>${r.i+1}-сұрақ · ${TOPICS[r.q.t]}</span><span>${tag}</span></div>
+      <p class="rq">${esc(r.q.q)}</p>
+      ${you}
+      <div class="ans good">${ICON_OK}<span>Дұрыс жауап: ${LETTERS[r.ci]}) ${esc(corr.text)}</span></div>
+      <p class="expl">${esc(r.q.e)}</p>
+    </article>`;
+  }).join('');
+}
+$('filter').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.filter=b.dataset.f;renderReview()});
+$('copyBtn').addEventListener('click',()=>{
+  const ta=$('copyText');
+  const done=()=>{$('toast').textContent='Көшірілді. Енді WhatsApp немесе Telegram-ға қойып жіберіңіз.'};
+  const fallback=()=>{ta.focus();ta.select();$('toast').textContent='Мәтін белгіленді — көшіріп алыңыз.'};
+  try{ navigator.clipboard.writeText(ta.value).then(done, fallback) }catch(err){ fallback() }
+});
+$('retryBtn').addEventListener('click', start);
+$('otherBtn').addEventListener('click',()=>{S.v=(S.v+1)%VARIANTS.length;renderVariants();show('vStart')});
+</script>
